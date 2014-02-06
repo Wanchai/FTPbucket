@@ -1,0 +1,11 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteCond %{REQUEST_METHOD} POST
+
+# allow POST from bitbucket
+RewriteCond %{REMOTE_ADDR} !131.103.20.165
+RewriteCond %{REMOTE_ADDR} !131.103.20.166
+
+# send all other post requests to 403 forbidden
+RewriteRule ^ / [F]   
