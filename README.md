@@ -14,8 +14,10 @@ INSTALLATION
 LIMITATIONS
 -----------
 
-- The script only copies the files you are pushing. Which means that if you start with this tool and you already have files in your Bitbucket repo, they won't be copied on the server. I'm looking for solutions on a full deploy. Which brings the second point.
-- I tried to push a 160Mo repo with more than 26 000 files and the POST hook didn't work out very well. From the logs, I could see that Bitbucket sent an empty 'commits' Array in the POST request. The limit is 1000 files/push I think. It's an unsolved issue: https://bitbucket.org/site/master/issue/7439/git-post-commit-hook-payloads-has-empty
+1. The script only copies the files you are pushing. It means that if you start with this tool when you already have files in your Bitbucket repo, they won't be copied on the server. I'm looking for solutions on a full deploy. Which brings the second point.
+2. I tried to push a 160Mo repo with more than 26 000 files and the POST hook didn't like it. The limit is 1000 files/push I think. It's an unsolved issue: https://bitbucket.org/site/master/issue/7439/git-post-commit-hook-payloads-has-empty
+
+SOLUTION : When you create a new repo on BB and need to push a lot of files, just do it. Right after, you setup the POST hook and manually copy the repo and FTPbucket files on your FTP.
 
 TODO
 ----
@@ -23,7 +25,6 @@ TODO
 - Add a GUI
 - Add a post-commit hook
 - Add support for SSH, Github, Mercurial
-
 
 LICENCE
 -------
