@@ -19,12 +19,17 @@ LIMITATIONS
 
 SOLUTION : When you create a new repo on BB and need to push a lot of files, just do it. Right after, you setup the POST hook and manually copy the repo and FTPbucket files on your FTP.
 
+MORE
+----
+
+It should work with Mercurial too but it's not tested yet.
+
 TODO
 ----
 
 - Add a GUI
 - Add a post-commit hook
-- Add support for SSH, Github, Mercurial
+- Add support for SSH, Github
 
 LICENCE
 -------
