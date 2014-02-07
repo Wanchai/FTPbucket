@@ -24,6 +24,8 @@ MORE
 
 It should work with Mercurial too but it's not tested yet.
 
+I'm sure a lot of improvements can be made to my code so don't hesitate to fork and improve it!
+
 TODO
 ----
 
