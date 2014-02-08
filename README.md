@@ -1,8 +1,7 @@
 FTPbucket
 =========
 
-
-FTPbucket is a PHP script that enables you to sync your BitBucket repository with any FTP account
+FTPbucket is a PHP script that enables you to sync your BitBucket repository with any FTP account.
 
 INSTALLATION
 ------------
@@ -37,4 +36,4 @@ LICENCE
 -------
 Copyright (c) 2014 [Thomas Malicet](http://www.thomasmalicet.com/)
 
-This code is an open-sourced software licensed under the BEER-WARE LICENCE
+This code is an open-sourced software licensed under the [BEER-WARE LICENCE] (https://fedoraproject.org/wiki/Licensing/Beerware)

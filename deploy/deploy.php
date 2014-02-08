@@ -1,7 +1,6 @@
 <?php
 
 include 'FTPbucket.php';
-require_once 'config.php';
 
 $go = new FTPbucket();
 
