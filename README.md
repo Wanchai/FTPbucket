@@ -7,7 +7,7 @@ FTPbucket is a PHP script that enables you to sync your BitBucket repository wit
 INSTALLATION
 ------------
 
-- Edit the config file
+- Edit the config file and rename it to 'config.php'
 - Copy the deploy folder on your FTP server
 - On Bitbucket>Admin>Hooks, setup a POST hook pointing to http://myserver/deploy/deploy.php
 
@@ -37,4 +37,4 @@ LICENCE
 -------
 Copyright (c) 2014 [Thomas Malicet](http://www.thomasmalicet.com/)
 
-This code is an open-sourced software licensed under the MIT license
+This code is an open-sourced software licensed under the BEER-WARE LICENCE

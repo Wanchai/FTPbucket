@@ -1,9 +1,13 @@
 <?php
 
 /**
- * FTPbucket - A PHP tool to sync your bitbucket repository with any FTP account
- *
- * @author Thomas Malicet
+ * FTPbucket is a PHP script that enables you to sync your BitBucket repository with any FTP account
+ * 
+ * "THE BEER-WARE LICENSE" (Revision 42): 
+ * Thomas MALICET wrote this file. As long as you retain this notice you
+ * can do whatever you want with this stuff. If we meet some day, and you think
+ * this stuff is worth it, you can buy me a beer in return.
+ * 
  */
 
 class FTPbucket {
