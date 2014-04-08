@@ -4,7 +4,7 @@
  * FTPbucket is a PHP script that enables you to sync your BitBucket repository with any FTP account
  * 
  * "THE BEER-WARE LICENSE" (Revision 42): 
- * Thomas MALICET (www.thomasmalicet.com) wrote this file. As long as you retain this notice you
+ * Thomas MALICET wrote this file. As long as you retain this notice you
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer in return.
  * 
@@ -21,16 +21,17 @@ class FTPbucket {
 
     public function init($pl) {
         $this->payload = $pl;
+        $this->log_it('Script called');
         $this->load_config();
         $this->load_payload($pl);
         $this->load_files();
     }
 
     function load_files(){
-    	$log_msg = '';
 
         $ftp = $this->get_ftpdata();
 
+    	$log_msg = '';
 		$log_msg .= $this->log_it('Connecting branch '.$ftp['branch_name'].' to '.$ftp['ftp_host'].$ftp['ftp_path'],false);
 
         // Makes a nice path
@@ -91,10 +92,14 @@ class FTPbucket {
 		}
     }
     function load_config(){
-        $config = include 'config.php';
+        if (is_file('config.php')){
+            $config = include 'config.php';
+            $this->ftp = $config['repos'];
+            $this->bitbucket = $config['bitbucket'];
+        } else {
+            $this->error('Can\'t find config.php');
+        }
 
-        $this->ftp = $config['repos'];
-        $this->bitbucket = $config['bitbucket'];
     }
 
     function load_payload($payload) {
@@ -173,7 +178,7 @@ class FTPbucket {
 
     // Appends to log file
     function log_msg($text) {
-    	$logdatei=fopen("logfile.txt","a");
+    	$logdatei = fopen("logfile.txt","a");
     	fputs($logdatei,$text);
     	fclose($logdatei);
     }

@@ -37,6 +37,8 @@ return array(
         'username' => '',
         'password' => ''
     ),
+    // ADMIN password for FTPBucket's UI
+    'admin_pass' => 'CHANGE'
 )
 
 ?>
