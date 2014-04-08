@@ -9,6 +9,11 @@ INSTALLATION
 - Edit the config file and rename it to 'config.php'
 - Copy the deploy folder on your FTP server
 - On Bitbucket>Admin>Hooks, setup a POST hook pointing to http://myserver/deploy/deploy.php
+ 
+LOGS
+-----
+You can see and clear the logs by connecting to http://myserver/deploy/ 
+You have to setup a password in the config file.
 
 LIMITATIONS
 -----------
@@ -28,7 +33,6 @@ I'm sure a lot of improvements can be made to my code so don't hesitate to fork 
 TODO
 ----
 
-- Add a GUI
 - Add a post-commit hook
 - Add support for SSH, Github...
 
