@@ -60,9 +60,9 @@ class FTPbucket {
         				$chdir = @ftp_chdir($conn_id, $ftp['ftp_path'].$dirname);
         				if($chdir == false){
         					if($this->make_directory($conn_id, $ftp['ftp_path'].$dirname)){
-        						$log_msg .= $this->log_it('Created new directory '.$dirname,false);
+    						    $log_msg .= $this->log_it('Created new directory '.$dirname,false);
         					} else {
-        						$log_msg .= $this->log_it('Error: failed to create new directory '.$dirname,false);
+    						    $log_msg .= $this->log_it('Error: failed to create new directory '.$dirname,false);
         					}
         				}
         				$ch = curl_init($url);
@@ -87,6 +87,8 @@ class FTPbucket {
                 }
     		}
     		ftp_close($conn_id);
+    		
+    		$log_msg .= $this->log_it('Transfer done.', false);
 
         	$this->log_msg($log_msg);
 		}
