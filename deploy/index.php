@@ -30,14 +30,14 @@
         @header('Location: index.php');
     }
     
-    if(!isset($_SESSION['logged'])){
+    if (!isset($_SESSION['logged'])) {
 ?>
         <form action="" method="get">
             <input type="password" name="pass" size="20" />
             <input type="submit" name="submit" value="Login" />
         </form>
 <?php
-    }else{
+    } else {
         if(isset($_GET['del'])){
             clear_file($_GET['del']);
             header('Location: index.php');
@@ -52,7 +52,7 @@
         }
         
         $exp2 = '';
-        if(file_exists('logpayload.txt')){
+        if (file_exists('logpayload.txt')){
             $log2 = file('logpayload.txt');
             foreach($log2 as $ln){
                 $exp2 .= $ln;
@@ -94,9 +94,3 @@ function clear_file($f){
         fclose($f);
     }
 }
-
-
-
-
-
-
