@@ -1,4 +1,18 @@
-<?php session_start(); ?>
+<?php 
+	session_start();
+
+    $config = include 'config.php';
+    
+    if (isset($_GET['pass']) && $_GET['pass'] == $config['admin_pass']){
+        $_SESSION['logged'] = 'ok';
+        @header('Location: index.php');
+    }
+
+    if (isset($_GET['del']) && isset($_SESSION['logged'])) {
+        clear_file($_GET['del']);
+        @header('Location: index.php');
+    }
+?>
 
 <!DOCTYPE HTML>
 <head>
@@ -23,13 +37,6 @@
 <body>
 
 <?php 
-    $config = include 'config.php';
-    
-    if (isset($_GET['pass']) && $_GET['pass'] == $config['admin_pass']){
-        $_SESSION['logged'] = 'ok';
-        @header('Location: index.php');
-    }
-    
     if (!isset($_SESSION['logged'])) {
 ?>
         <form action="" method="get">
@@ -38,23 +45,18 @@
         </form>
 <?php
     } else {
-        if(isset($_GET['del'])){
-            clear_file($_GET['del']);
-            header('Location: index.php');
-        }
-        // Page
         $exp1 = '';
-        if(file_exists('logfile.txt')){
+        if (file_exists('logfile.txt')) {
             $log1 = file('logfile.txt');
-            foreach($log1 as $ln){
+            foreach ($log1 as $ln) {
                 $exp1 .= $ln;
             }
         }
         
         $exp2 = '';
-        if (file_exists('logpayload.txt')){
+        if (file_exists('logpayload.txt')) {
             $log2 = file('logpayload.txt');
-            foreach($log2 as $ln){
+            foreach ($log2 as $ln) {
                 $exp2 .= $ln;
             }
         }
