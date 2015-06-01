@@ -47,8 +47,10 @@ class FTPbucket {
         			if ($file->type=="removed") {
         			     // TODO: Check if file exists
         				if (@ftp_delete($conn_id, $ftp['ftp_path'].$file->file)) {
-        				    $log_msg .= $this->log_it('Removed '.$ftp['ftp_path'].$file->file,false);
-        				}
+        				    $log_msg .= $this->log_it('Removed '.$ftp['ftp_path'].$file->file, false);
+        				} else {
+                            $log_msg .= $this->log_it('Error while removing: '.$ftp['ftp_path'].$file->file, false);
+                        }
         			} else {
         				$url = "https://api.bitbucket.org/1.0/repositories".$this->repo->absolute_url."raw/".$node."/".$file->file;
         				$dirname = dirname($file->file);
@@ -57,7 +59,7 @@ class FTPbucket {
         					if ($this->make_directory($conn_id, $ftp['ftp_path'].$dirname)) {
     						    $log_msg .= $this->log_it('Created new directory '.$dirname,false);
         					} else {
-    						    $log_msg .= $this->log_it('Error: failed to create new directory '.$dirname,false);
+    						    $log_msg .= $this->log_it('Error: failed to create new directory '.$dirname, false);
         					}
         				}
         				$ch = curl_init($url);
