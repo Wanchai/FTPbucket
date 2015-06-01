@@ -24,11 +24,9 @@
     session_start(); 
     $config = include 'config.php';
     
-    // 
-    // if(1){
     if (isset($_GET['pass']) && $_GET['pass'] == $config['admin_pass']){
         $_SESSION['logged'] = 'ok';
-        header('Location: index.php');
+        @header('Location: index.php');
     }
     
     if(!isset($_SESSION['logged'])){

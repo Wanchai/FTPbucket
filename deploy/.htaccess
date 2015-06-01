@@ -1,3 +1,5 @@
+SetEnv PHP_VER 5
+
 Options +FollowSymLinks
 RewriteEngine on
 

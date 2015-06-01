@@ -12,12 +12,7 @@
 
 class FTPbucket {
 
-    private $ftp;
-    private $bitbucket;
-    private $repo;
-    private $commits;
-    private $files = array();
-    private $payload;
+    private $ftp, $bitbucket, $repo, $commits, $files = array(), $payload;
 
     public function init($pl) {
         $this->payload = $pl;
@@ -35,31 +30,31 @@ class FTPbucket {
 		$log_msg .= $this->log_it('Connecting branch '.$ftp['branch_name'].' to '.$ftp['ftp_host'].$ftp['ftp_path'],false);
 
         // Makes a nice path
-		if(substr($ftp['ftp_path'],0,1)!='/') $ftp['ftp_path'] = '/'.$ftp['ftp_path'];
-		if(substr($ftp['ftp_path'], strlen($ftp['ftp_path'])-1,1)!='/') $ftp['ftp_path'] = $ftp['ftp_path'].'/';
+		if (substr($ftp['ftp_path'],0,1)!='/') $ftp['ftp_path'] = '/'.$ftp['ftp_path'];
+		if (substr($ftp['ftp_path'], strlen($ftp['ftp_path'])-1,1)!='/') $ftp['ftp_path'] = $ftp['ftp_path'].'/';
 
 		$conn_id = ftp_connect($ftp['ftp_host']);
-        if(!@ftp_login($conn_id, $ftp['ftp_user'], $ftp['ftp_pass'])){
+        if (!@ftp_login($conn_id, $ftp['ftp_user'], $ftp['ftp_pass'])) {
             $this->error('error: Connection failed!');
-		}else{
-            foreach($this->commits as $commit) {
+		} else {
+            foreach ($this->commits as $commit) {
 
                 $node = $commit->node;
                 $time = $commit->timestamp;
 
-                foreach($commit->files as $file) {
+                foreach ($commit->files as $file) {
 
         			if ($file->type=="removed") {
         			     // TODO: Check if file exists
-        				if(@ftp_delete($conn_id, $ftp['ftp_path'].$file->file)) {
+        				if (@ftp_delete($conn_id, $ftp['ftp_path'].$file->file)) {
         				    $log_msg .= $this->log_it('Removed '.$ftp['ftp_path'].$file->file,false);
         				}
-        			}else{
+        			} else {
         				$url = "https://api.bitbucket.org/1.0/repositories".$this->repo->absolute_url."raw/".$node."/".$file->file;
         				$dirname = dirname($file->file);
         				$chdir = @ftp_chdir($conn_id, $ftp['ftp_path'].$dirname);
-        				if($chdir == false){
-        					if($this->make_directory($conn_id, $ftp['ftp_path'].$dirname)){
+        				if ($chdir == false){
+        					if ($this->make_directory($conn_id, $ftp['ftp_path'].$dirname)) {
     						    $log_msg .= $this->log_it('Created new directory '.$dirname,false);
         					} else {
     						    $log_msg .= $this->log_it('Error: failed to create new directory '.$dirname,false);
@@ -94,7 +89,7 @@ class FTPbucket {
 		}
     }
     function load_config(){
-        if (is_file('config.php')){
+        if (is_file('config.php')) {
             $config = include 'config.php';
             $this->ftp = $config['repos'];
             $this->bitbucket = $config['bitbucket'];
@@ -126,15 +121,15 @@ class FTPbucket {
     }
     
     function get_branch($repo){
-        foreach($this->commits as $commit) {
+        foreach ($this->commits as $commit) {
 
             // For several commits, only the last one has the branch name, the others null
-            if($commit->branch != null){
+            if ($commit->branch != null){
         
                 foreach ($repo['branches'] as $branch) {
         
                     // Checks if you have a config for BB's branch
-                    if($branch['branch_name'] == $commit->branch) return $branch;
+                    if ($branch['branch_name'] == $commit->branch) return $branch;
                 }
             }
         }
@@ -171,9 +166,9 @@ class FTPbucket {
     function log_it($text,$save=true) {
     	$msg = date("d.m.Y, H:i:s",time()) .': '.$text."\n";
 
-    	if(!$save){
+    	if (!$save) {
     		return $msg;
-    	}else{
+    	} else {
     		$this->log_msg($msg);
     	}
     }
