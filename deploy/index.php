@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+
 <!DOCTYPE HTML>
 <head>
 	<meta http-equiv="content-type" content="text/html" />
@@ -20,8 +22,7 @@
 
 <body>
 
-<?php
-    session_start(); 
+<?php 
     $config = include 'config.php';
     
     if (isset($_GET['pass']) && $_GET['pass'] == $config['admin_pass']){
