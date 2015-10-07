@@ -27,7 +27,7 @@ class FTPbucket {
         $ftp = $this->get_ftpdata();
 
     	$log_msg = '';
-		$log_msg .= $this->log_it('Connecting branch '.$ftp['branch_name'].' to '.$ftp['ftp_host'].$ftp['ftp_path'],false);
+		$log_msg .= $this->log_it('Connecting branch '.$ftp['branch_name'].' to '.$ftp['ftp_host'],false);
 
         // Makes a nice path
 		if (substr($ftp['ftp_path'],0,1)!='/') $ftp['ftp_path'] = '/'.$ftp['ftp_path'];
@@ -35,8 +35,11 @@ class FTPbucket {
 
 		$conn_id = ftp_connect($ftp['ftp_host']);
         if (!@ftp_login($conn_id, $ftp['ftp_user'], $ftp['ftp_pass'])) {
-            $this->error('error: Connection failed!');
+            $this->error('error: FTP Connection failed!');
 		} else {
+		    
+		    ftp_pasv($conn_id, true);
+		    
             foreach ($this->commits as $commit) {
 
                 $node = $commit->node;
@@ -44,48 +47,67 @@ class FTPbucket {
 
                 foreach ($commit->files as $file) {
 
-        			if ($file->type=="removed") {
+        			if ($file->type=="removed") 
+        			{
         			     // TODO: Check if file exists
         				if (@ftp_delete($conn_id, $ftp['ftp_path'].$file->file)) {
         				    $log_msg .= $this->log_it('Removed '.$ftp['ftp_path'].$file->file, false);
         				} else {
                             $log_msg .= $this->log_it('Error while removing: '.$ftp['ftp_path'].$file->file, false);
                         }
-        			} else {
-        				$url = "https://api.bitbucket.org/1.0/repositories".$this->repo->absolute_url."raw/".$node."/".$file->file;
+        			} 
+        			else 
+        			{
         				$dirname = dirname($file->file);
         				$chdir = @ftp_chdir($conn_id, $ftp['ftp_path'].$dirname);
-        				if ($chdir == false){
+        				
+        				if (!$chdir)
+        				{
         					if ($this->make_directory($conn_id, $ftp['ftp_path'].$dirname)) {
     						    $log_msg .= $this->log_it('Created new directory '.$dirname,false);
         					} else {
     						    $log_msg .= $this->log_it('Error: failed to create new directory '.$dirname, false);
         					}
         				}
+        				
+        				$url = "https://api.bitbucket.org/1.0/repositories".$this->repo->absolute_url."raw/".$node."/".$file->file;
+        				
         				$ch = curl_init($url);
         				curl_setopt($ch, CURLOPT_USERPWD, $this->bitbucket['username'].':'.$this->bitbucket['password']);
         				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 
         				$data = curl_exec($ch);
-
+        				
+        				if(!$data) 
+        				{
+        				    $log_msg .= $this->log_it('Cant\'t get the file '.$file->file.' cURL error: '.curl_error($ch), false);
+        				}
+        				else
+        				{
+            				$temp = tmpfile();
+            				fwrite($temp, $data);
+            				fseek($temp, 0);
+    
+            				if(ftp_fput($conn_id, $ftp['ftp_path'].$file->file, $temp, FTP_BINARY))
+            				{
+            				    $log_msg .= $this->log_it('Uploaded: '.$ftp['ftp_path'].$file->file, false);
+            				}
+            				else
+            				{
+            				    $e = error_get_last();
+            				    $log_msg .= $this->log_it('Error Uploading '.$file->file.' >> '.$e['message'], false);
+            				}
+            				fclose($temp);
+        				}
+        				
         				curl_close($ch);
-
-        				$temp = tmpfile();
-        				fwrite($temp, $data);
-        				fseek($temp, 0);
-
-        				ftp_fput($conn_id, $ftp['ftp_path'].$file->file, $temp, FTP_BINARY);
-
-        				fclose($temp);
-
-        				$log_msg .= $this->log_it('Uploaded: '.$ftp['ftp_path'].$file->file,false);
         			}
                 }
     		}
     		ftp_close($conn_id);
     		
-    		$log_msg .= $this->log_it('Transfer done.', false);
+    		$log_msg .= $this->log_it("Transfer done.\n", false);
 
         	$this->log_msg($log_msg);
 		}
@@ -138,13 +160,15 @@ class FTPbucket {
         $this->error('error: Can\'t find a branch {'.$br.'} on repo {'.$repo['repo_name'].'}');
     }
 
-    function make_directory($ftp_stream, $dir){
+    function make_directory($ftp_stream, $dir)
+    {
     	if ($this->ftp_is_dir($ftp_stream, $dir) || @ftp_mkdir($ftp_stream, $dir)) return true;
     	if (!$this->make_directory($ftp_stream, dirname($dir))) return false;
     	return ftp_mkdir($ftp_stream, $dir);
     }
 
-    function ftp_is_dir($ftp_stream, $dir){
+    function ftp_is_dir($ftp_stream, $dir)
+    {
     	$original_directory = ftp_pwd($ftp_stream);
     	if ( @ftp_chdir( $ftp_stream, $dir ) ) {
     		ftp_chdir( $ftp_stream, $original_directory );
@@ -165,7 +189,7 @@ class FTPbucket {
 
     // Formats $text for login
     // Appends to log file if save == true
-    function log_it($text,$save=true) {
+    function log_it($text, $save=true) {
     	$msg = date("d.m.Y, H:i:s",time()) .': '.$text."\n";
 
     	if (!$save) {
@@ -182,7 +206,7 @@ class FTPbucket {
     	fclose($logdatei);
     }
     
-    // Log the payload from bitbucket
+    // Log the received payload
     function log_payload($text) {
     	$logdatei = fopen("logpayload.txt","a");
     	fputs($logdatei,$text);
