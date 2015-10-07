@@ -8,7 +8,7 @@ INSTALLATION
 
 - Edit the config file and rename it to 'config.php'
 - Copy the deploy folder on your FTP server
-- On Bitbucket>Admin>Hooks, setup a POST hook pointing to http://myserver/deploy/deploy.php
+- On Bitbucket>Settings>Services, setup a POST hook pointing to http://myserver/deploy/deploy.php
 
 **/!\** If you want to use Webhooks, you need a SSL certificate **/!\** (not tested) 
 
