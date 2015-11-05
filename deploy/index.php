@@ -1,5 +1,5 @@
 <?php 
-	session_start();
+    session_start();
 
     $config = include 'config.php';
     
@@ -16,22 +16,27 @@
 
 <!DOCTYPE HTML>
 <head>
-	<meta http-equiv="content-type" content="text/html" />
-	<meta name="author" content="Thomas Malicet" />
+    <meta http-equiv="content-type" content="text/html" />
+    <meta name="author" content="Thomas Malicet" />
 
-	<title>FTPbucket</title>
-	<style>
-	    .log{
-	        font: 10px verdana,sans-serif;
-	        width: 100%;
-	        border: solid 1px #000;
-	        height: 500px;
-	        overflow: scroll;
-	    }
-	    td {
-	        padding: 5px;
-	    }
-	</style>
+    <title>FTPbucket</title>
+    <style>
+        .log{
+            font: 10px verdana,sans-serif;
+            width: 100%;
+            border: solid 1px #000;
+            height: 500px;
+            overflow: scroll;
+            white-space: pre-wrap;       /* CSS 3 */
+            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word; 
+        }
+        td {
+            padding: 5px;
+        }
+    </style>
 </head>
 
 <body>
