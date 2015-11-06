@@ -8,8 +8,9 @@ FTPbucket is a PHP script that enables you to sync your BitBucket (and soon Gith
 **v0.6**
 If you are updating, you should go for a fresh install. Erase everything except the .txt files if you want to keep your logs.
 
-- Now compatible with both Webhooks and POST hooks from BitBucket
-- huge changes in order to support Github hooks in the future (soon!!!)
+- Now compatible with both Webhooks and POST hooks from BitBucket. Many thanks to [Jacob Moen](https://github.com/jacmoe) for his help!
+
+- Huge changes in order to support Github hooks in the future (soon!!!)
 
 INSTALLATION
 ------------
