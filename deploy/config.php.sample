@@ -1,6 +1,7 @@
 <?php
 /*
 * @repo_name = you can find it in your repo URL : https://bitbucket.org/a_name/repo_name/
+* @repo_home = 'bitbucket' OR 'github'
 * @type = only support FTP for now
 *
 * You can set a FTP account for each branch or just change the folder for instance
@@ -12,6 +13,7 @@ return array(
     'repos' => array(
         array (
     		'repo_name'=>'test',
+    		'repo_host'=>'bitbucket',
     		'branches'=>array(
                 array(
     				'branch_name'=>'master',
