@@ -2,6 +2,7 @@ FTPbucket
 =========
 
 FTPbucket is a PHP script that enables you to sync your BitBucket (and soon Github) repository with any FTP account.
+It works with Git and Mercurial.
 
 **- release notes -**
 		
@@ -36,8 +37,6 @@ SOLUTION : When you create a new repo on BB and need to push a lot of files, jus
 
 MORE
 ----
-
-It should work with Mercurial too but it's not tested yet.
 
 I'm sure a lot of improvements can be made to my code so don't hesitate to fork and improve it! I would be glad to hear about your tests and issues too.
 
