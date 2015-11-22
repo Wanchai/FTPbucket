@@ -1,11 +1,25 @@
 FTPbucket
 =========
 
-FTPbucket is a PHP script that enables you to sync your BitBucket (and soon Github) repository with any FTP account.
+FTPbucket is a PHP script that enables you to sync your BitBucket or GitHub repository with any web-server.
 It works with Git and Mercurial.
 
+**How does it work?**
+When you push to a GitHub or BitBucket repository, you can setup a hook that will be called after every push. This hook will send a payload containing what is changed your server where you put the FTPbucket folder.
+FTPbucket can apply the modifications on the same host or to another one through FTP or SSH (SFTP).
+
+From one FTPbucket folder, you can manage an infinite number of hosts and repos.
+
 **- release notes -**
-		
+
+**v0.7**
+If you are updating, you should go for a fresh install. Erase everything except the .txt files if you want to keep your logs.
+- Support for GitHub
+
+- Beta for SSH
+
+- Renamed the folder 'deploy' to 'ftpbucket' to avoid confusion
+
 **v0.6**
 If you are updating, you should go for a fresh install. Erase everything except the .txt files if you want to keep your logs.
 
@@ -16,12 +30,15 @@ If you are updating, you should go for a fresh install. Erase everything except 
 INSTALLATION
 ------------
 
-- Edit the config file and rename it to 'config.php'
-- Copy the deploy folder on your FTP server
-- On Bitbucket repositorie page, go to Settings>Webhooks>Add webhook and setup a hook pointing to http://myserver/deploy/deploy.php with "Triggers > Repository push"
+If you want to use SSH, you must install the SSH2 extension available from PECL on the server hosting FTPbucket.
 
-Note: POST hooks are still supported by FTPbucket (it's detected automatically).
- 
+- Edit the config file sample and rename it to 'config.php'
+- Copy the 'ftpbucket' folder on your server
+- **On BitBucket** repositorie page, go to Settings>Webhooks>Add webhook and setup a hook pointing to http://myserver/ftpbucket/deploy.php with "Triggers > Repository push"
+- **On GitHub** repositorie page, go to Settings>Webhooks & Services>Add webhook and setup a hook pointing to http://myserver/ftpbucket/deploy.php with 'Content Type > application/json' and "Just the push event."
+
+Note: On BitBucket, POST hooks are still supported by FTPbucket (not working with version 0.7+).
+
 LOGS
 -----
 You can see and clear the logs by connecting to http://myserver/deploy/ 
@@ -43,7 +60,7 @@ I'm sure a lot of improvements can be made to my code so don't hesitate to fork 
 TODO
 ----
 
-- Add support for SSH, Github...
+- Add a function to make a full sync
 
 LICENCE
 -------

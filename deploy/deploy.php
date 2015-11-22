@@ -10,10 +10,6 @@ if(isset($_POST['payload']))
         $go = new BBpost();
         $go->init($_POST['payload']);
 	}
-	else
-	{
-	    // github goes here
-	}
 }
 else
 {
@@ -26,6 +22,13 @@ else
         $log = fopen ("logpayload.txt", "a");
         fputs($log, $msg);
         fclose($log);
+    }
+    else if (isset($payload['repository']['html_url']) && substr_count($payload['repository']['html_url'], 'github') === 1)
+    {
+        // GitHub webhook goes here
+	    include 'GHjson.php';
+        $go = new GHjson();
+        $go->init($payload);        
     }
     else
     {

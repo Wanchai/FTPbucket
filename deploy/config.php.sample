@@ -2,17 +2,20 @@
 /*
 * @repo_name = you can find it in your repo URL : https://bitbucket.org/a_name/repo_name/
 * @repo_home = 'bitbucket' OR 'github'
-* @type = only support FTP for now
+* @type = FTP or SSH or NONE if it's the same server
+* If you want to copy your files on the server hosting FTPbucket's script, set 'type'=>'none'.
+* @ftp_path is relative to the ftp_host. If type is 'none', path is relative to FTPbucket's script location. '../' is usually a good idea.
 *
-* You can set a FTP account for each branch or just change the folder for instance
-* You can only use one slug config for now
+* You can set a specific server for each branch or just change the path
 *
-* the rest is self-explanatory
+* If you work with multiple servers: FTP credentials are the one of your target server, not the server hosting FTPbucket's script. 
+* 
 */
+
 return array(
     'repos' => array(
-        array (
-    		'repo_name'=>'test',
+        'repo1' => array (
+    		'repo_name'=>'testa',
     		'repo_host'=>'bitbucket',
     		'branches'=>array(
                 array(
@@ -25,17 +28,33 @@ return array(
     			),
                 array(
     				'branch_name'=>'beta',
-    				'type'=>'ftp',
-    				'ftp_host'=>'ftp.example.org',
-    				'ftp_user'=>'example_username',
-    				'ftp_pass'=>'example_password',
-    				'ftp_path'=>'/dev/',
+    				'type'=>'none',
+                    'ftp_path'=>'../',
     			),
     		),        
+        ),
+        'repo2' => array (
+            'repo_name'=>'testb',
+            'repo_host'=>'github',
+            'branches'=>array(
+                array(
+                    'branch_name'=>'master',
+                    'type'=>'ssh',
+                    'ftp_host'=>'example.org',
+                    'ftp_user'=>'example_username',
+                    'ftp_pass'=>'example_password',
+                    'ftp_path'=>'/prod/',
+                ),
+            ),        
         ),
     ),
     // Your BitBucket Credentials
     'bitbucket' => array(
+        'username' => '',
+        'password' => ''
+    ),
+    // Your GitHub Credentials
+    'github' => array(
         'username' => '',
         'password' => ''
     ),
