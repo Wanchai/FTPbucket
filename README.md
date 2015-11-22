@@ -15,16 +15,13 @@ From one FTPbucket folder, you can manage an infinite number of hosts and repos.
 **v0.7**
 If you are updating, you should go for a fresh install. Erase everything except the .txt files if you want to keep your logs.
 - Support for GitHub
-
 - Beta for SSH
-
 - Renamed the folder 'deploy' to 'ftpbucket' to avoid confusion
 
 **v0.6**
 If you are updating, you should go for a fresh install. Erase everything except the .txt files if you want to keep your logs.
 
 - Now compatible with both Webhooks and POST hooks from BitBucket. Many thanks to [Jacob Moen](https://github.com/jacmoe) for his help!
-
 - Huge changes in order to support Github hooks in the future (soon!!!)
 
 INSTALLATION
