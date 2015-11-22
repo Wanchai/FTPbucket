@@ -31,8 +31,8 @@ If you want to use SSH, you must install the SSH2 extension available from PECL 
 
 - Edit the config file sample and rename it to 'config.php'
 - Copy the 'ftpbucket' folder on your server
-- **On BitBucket** repositorie page, go to Settings>Webhooks>Add webhook and setup a hook pointing to http://myserver/ftpbucket/deploy.php with "Triggers > Repository push"
-- **On GitHub** repositorie page, go to Settings>Webhooks & Services>Add webhook and setup a hook pointing to http://myserver/ftpbucket/deploy.php with 'Content Type > application/json' and "Just the push event."
+- **On BitBucket** repository page, go to Settings>Webhooks>Add webhook and setup a hook pointing to http://myserver/ftpbucket/deploy.php with "Triggers > Repository push"
+- **On GitHub** repository page, go to Settings>Webhooks & Services>Add webhook and setup a hook pointing to http://myserver/ftpbucket/deploy.php with 'Content Type > application/json' and "Just the push event."
 
 Note: On BitBucket, POST hooks are still supported by FTPbucket (not working with version 0.7+).
 
