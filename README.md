@@ -41,7 +41,7 @@ Note: On BitBucket, POST hooks are still supported by FTPbucket (not working wit
 
 LOGS
 -----
-You can see and clear the logs by connecting to http://myserver/deploy/ 
+You can see and clear the logs by connecting to http://myserver/ftpbucket/ 
 You have to setup a password in the config file.
 
 LIMITATIONS
