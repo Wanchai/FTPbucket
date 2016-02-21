@@ -138,11 +138,11 @@ class BBjson {
         
         // --- Checks if the repo from BB match one of yours --- //
         $check = 0;
-        $pl_repo_name = $this->payload['repository']['name'];
+        $pl_repo_name = str_replace(" ", "-", strtolower($this->payload['repository']['name']));
         
         foreach ($config['repos'] as $repo) 
         {
-            if(strtolower($pl_repo_name) == strtolower($repo['repo_name']) && $repo['repo_host'] == 'bitbucket')
+            if($pl_repo_name == strtolower($repo['repo_name']) && $repo['repo_host'] == 'bitbucket')
             {
                 // --- FTP config from config.php --- //
                 $this->data->ftp = $repo;
