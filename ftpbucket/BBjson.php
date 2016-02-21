@@ -98,7 +98,7 @@ class BBjson {
                         }
                     }
 
-                    $url = 'https://api.bitbucket.org/1.0/repositories/'.$this->data->auth['username'].'/'.$this->data->ftp['repo_name'].'/raw/'.$node.'/'.$file['file'];
+                    $url = 'https://api.bitbucket.org/1.0/repositories/'.$this->data->ftp['full_name'].'/raw/'.$node.'/'.$file['file'];
                     
                     $cu = curl_init($url);
                     curl_setopt($cu, CURLOPT_USERPWD, $this->data->auth['username'].':'.$this->data->auth['password']);
@@ -136,6 +136,7 @@ class BBjson {
 
         $config = include 'config.php';
         
+        // --- The Repository --- //       
         // --- Checks if the repo from BB match one of yours --- //
         $check = 0;
         $pl_repo_name = str_replace(" ", "-", strtolower($this->payload['repository']['name']));
@@ -150,8 +151,6 @@ class BBjson {
             }
         }
         
-        // $this->log_it(print_r($this->data->ftp, true));
-        
         if($check == 0){
             $this->error('error: Can\'t find any repo with the name {'.$pl_repo_name.'} for BitBucket in your config file.');
         } else if($check > 1) {
@@ -159,6 +158,9 @@ class BBjson {
         } else {
             $this->log_it('Received a push from {'.$pl_repo_name.'}');
         }
+        
+        $this->data->ftp["full_name"] = $this->payload['repository']['full_name'];
+        
         // --- Required for Authentication --- // 
         $this->data->auth = $config['bitbucket'];
         
@@ -193,7 +195,7 @@ class BBjson {
             foreach ($change['commits'] as $cmt)
             {
                 // --- Retrieve list of files --- //
-                $url = 'https://bitbucket.org/api/1.0/repositories/'.$this->data->auth['username'].'/'.$this->data->ftp['repo_name'].'/changesets/'.$cmt['hash'].'/';
+                $url = 'https://bitbucket.org/api/1.0/repositories/'.$this->data->ftp['full_name'].'/changesets/'.$cmt['hash'].'/';
                 
                 $ch = curl_init($url);
                 curl_setopt($ch, CURLOPT_USERPWD, $this->data->auth['username'].':'.$this->data->auth['password']);
@@ -205,6 +207,9 @@ class BBjson {
                     $this->error('Cant\'t get lists of files! cURL error: '.curl_error($cu));
                 } else {
                     //$this->log_it('List of files: '.print_r(json_decode($data, true), true));
+                    $arr = json_decode($data, true);
+                    if(isset($arr["error"]))
+                        $this->error("cURL error: " . print_r($arr, true));
                 }
                 
                 $commit = json_decode($data, true);
