@@ -204,7 +204,7 @@ class BBjson {
                 $data = curl_exec($ch);
                 
                 if (!$data) {
-                    $this->error('Cant\'t get lists of files! cURL error: '.curl_error($cu));
+                    $this->error('Cant\'t get lists of files! cURL error: '.curl_error($ch));
                 } else {
                     //$this->log_it('List of files: '.print_r(json_decode($data, true), true));
                     $arr = json_decode($data, true);
