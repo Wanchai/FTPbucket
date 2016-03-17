@@ -87,9 +87,7 @@ class BBjson {
                 {
                     $dirname = dirname($file['file']);
                     
-                    $chdir = is_dir($wrapper.$dirname);
-                    
-                    if (!$chdir)
+                    if (!is_dir($wrapper.$dirname))
                     {
                         if (mkdir($wrapper.$dirname, 0705, true)) {
                             $this->log_it('Created new directory '.$dirname);

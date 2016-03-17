@@ -82,9 +82,7 @@ class GHjson {
             {
                 $dirname = dirname($file);
                 
-                $chdir = is_dir($wrapper.$dirname);
-                
-                if (!$chdir)
+                if (!is_dir($wrapper.$dirname))
                 {
                     if (mkdir($wrapper.$dirname, 0705, true)) {
                         $this->log_it('Created new directory '.$dirname);
@@ -93,7 +91,7 @@ class GHjson {
                     }
                 }
     
-                $url = 'https://raw.githubusercontent.com/'.$this->data->auth['username'].'/'.$this->data->ftp['repo_name'].'/'.$node.'/'.$file;
+                $url = 'https://raw.githubusercontent.com/'.$this->data->ftp["full_name"].'/'.$node.'/'.$file;
                 
                 $cu = curl_init($url);
                 curl_setopt($cu, CURLOPT_USERPWD, $this->data->auth['username'].':'.$this->data->auth['password']);
@@ -103,9 +101,9 @@ class GHjson {
                 $data = curl_exec($cu);
                 
                 if (!$data) 
-                {
                     $this->log_it('Cant\'t get the file '.$file.' cURL error: '.curl_error($cu));
-                }
+                else if (curl_getinfo($cu, CURLINFO_HTTP_CODE) == 404)
+                    $this->log_it('Cant\'t get the file '.$file.' : 404');
                 else
                 {
                     if (file_put_contents($wrapper.$file, $data, 0, stream_context_create(array('ftp' => array('overwrite' => true)))))
@@ -151,6 +149,9 @@ class GHjson {
         } else {
             $this->log_it('Received a push from {'.$pl_repo_name.'}');
         }
+        
+        $this->data->ftp["full_name"] = $this->payload['repository']['full_name'];
+        
         // --- Required for Authentication --- // 
         $this->data->auth = $config['github'];
         
