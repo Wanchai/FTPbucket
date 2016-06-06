@@ -2,22 +2,22 @@
 
 /**
  * This class manages payloads received from a BitBucket webhooks (JSON)
- * 
- * "THE BEER-WARE LICENSE" (Revision 42): 
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
  * Thomas MALICET wrote this file. As long as you retain this notice you
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer in return.
- * 
+ *
  * www.thomasmalicet.com
  */
 
 class BBjson {
-    
+
     // JSON parsed payload
     private $payload;
-    
-    /* 
-    Contains every usefull datas 
+
+    /*
+    Contains every usefull datas
     - auth: credentials for repo host (BB, GH, ...) from config.php
     - branch: branch info from this push
     - -> ftp: FTP config for this branch
@@ -29,9 +29,9 @@ class BBjson {
     public function init($pl) {
         $this->payload = $pl;
         $this->log_it('Script called for a BitBucket JSON payload');
-        
+
         $this->load_datas();
-        
+
         foreach($this->data->branch as $br)
         {
             $this->load_files($br);
@@ -42,7 +42,7 @@ class BBjson {
     {
         $ftp = $br['ftp'];
 
-        if ($ftp['type'] == 'ssh' && !function_exists('ssh2_connect')) 
+        if ($ftp['type'] == 'ssh' && !function_exists('ssh2_connect'))
             $this->error('error: You don\'t have SSH capabilities on this server. You must install the SSH2 extension available from PECL');
 
         // Makes a nice path
@@ -63,30 +63,30 @@ class BBjson {
                 break;
             case 'none':
                 $wrapper = $ftp['ftp_path'];
-                break;            
+                break;
             default:
                 $this->error('error: '.strtoupper($ftp['type']).' Connection type not reconized!');
                 break;
         }
 
-        foreach ($br['commits'] as $commit) 
+        foreach ($br['commits'] as $commit)
         {
             $node = $commit ['node'];
-            
-            foreach ($commit['files'] as $file) 
+
+            foreach ($commit['files'] as $file)
             {
-                if ($file['type'] == "removed") 
+                if ($file['type'] == "removed")
                 {
                     if (@unlink($wrapper.$file['file'])) {
                         $this->log_it('Removed '.$ftp['ftp_path'].$file['file']);
                     } else {
                         $this->log_it('Error while removing: '.$ftp['ftp_path'].$file['file']);
                     }
-                } 
-                else 
+                }
+                else
                 {
                     $dirname = dirname($file['file']);
-                    
+
                     if (!is_dir($wrapper.$dirname))
                     {
                         if (mkdir($wrapper.$dirname, 0705, true)) {
@@ -97,15 +97,20 @@ class BBjson {
                     }
 
                     $url = 'https://api.bitbucket.org/1.0/repositories/'.$this->data->ftp['full_name'].'/raw/'.$node.'/'.$file['file'];
-                    
+
                     $cu = curl_init($url);
                     curl_setopt($cu, CURLOPT_USERPWD, $this->data->auth['username'].':'.$this->data->auth['password']);
                     curl_setopt($cu, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($cu, CURLOPT_FOLLOWLOCATION, false);
 
                     $data = curl_exec($cu);
-                    
-                    if (!$data) 
+
+                    /**
+                     * Check for HTTP return status instead of the data that is returned from
+                     * CURL. This ensures that even an empty file will be transfered properly.
+                     */
+                    $http_code = curl_getinfo($cu, CURLINFO_HTTP_CODE);
+                    if ($http_code != 200)
                     {
                         $this->log_it('Cant\'t get the file '.$file['file'].' cURL error: '.curl_error($cu));
                     }
@@ -127,19 +132,19 @@ class BBjson {
         }
         $this->log_it("Transfer done for branch {".$br['name']."}\n");
     }
-    
+
     function load_datas()
     {
         if (!is_file('config.php')) $this->error('Can\'t find config.php');
 
         $config = include 'config.php';
-        
-        // --- The Repository --- //       
+
+        // --- The Repository --- //
         // --- Checks if the repo from BB match one of yours --- //
         $check = 0;
         $pl_repo_name = str_replace(" ", "-", strtolower($this->payload['repository']['name']));
-        
-        foreach ($config['repos'] as $repo) 
+
+        foreach ($config['repos'] as $repo)
         {
             if($pl_repo_name == strtolower($repo['repo_name']) && $repo['repo_host'] == 'bitbucket')
             {
@@ -148,7 +153,7 @@ class BBjson {
                 $check++;
             }
         }
-        
+
         if($check == 0){
             $this->error('error: Can\'t find any repo with the name {'.$pl_repo_name.'} for BitBucket in your config file.');
         } else if($check > 1) {
@@ -156,14 +161,14 @@ class BBjson {
         } else {
             $this->log_it('Received a push from {'.$pl_repo_name.'}');
         }
-        
+
         $this->data->ftp["full_name"] = $this->payload['repository']['full_name'];
-        
-        // --- Required for Authentication --- // 
+
+        // --- Required for Authentication --- //
         $this->data->auth = $config['bitbucket'];
-        
+
         if(count($this->payload['push']['changes']) === 0) $this->error('No changes detected');
-        
+
         // --- Gets the commits and changes --- //
         foreach ($this->payload['push']['changes'] as $change)
         {
@@ -172,7 +177,7 @@ class BBjson {
             $branch_name = $change['new']['name'];
             $this->data->branch[$branch_name]['name'] = $branch_name;
             $this->data->branch[$branch_name]['commits'] = array();
-            
+
             foreach($this->data->ftp['branches'] as $br)
             {
                 if($br['branch_name'] == $branch_name)
@@ -188,20 +193,24 @@ class BBjson {
             } else {
                 $this->log_it('Modifications detected on the branch {'.$branch_name.'}');
             }
-            
+
             // --- The Commits --- //
             foreach ($change['commits'] as $cmt)
             {
                 // --- Retrieve list of files --- //
                 $url = 'https://bitbucket.org/api/1.0/repositories/'.$this->data->ftp['full_name'].'/changesets/'.$cmt['hash'].'/';
-                
+
                 $ch = curl_init($url);
                 curl_setopt($ch, CURLOPT_USERPWD, $this->data->auth['username'].':'.$this->data->auth['password']);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
                 $data = curl_exec($ch);
-                
-                if (!$data) {
+                /**
+                 * Check for HTTP return status instead of the data that is returned from
+                 * CURL. This ensures that even an empty file will be transfered properly.
+                 */
+                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                if ($http_code != 200) {
                     $this->error('Cant\'t get lists of files! cURL error: '.curl_error($ch));
                 } else {
                     //$this->log_it('List of files: '.print_r(json_decode($data, true), true));
@@ -209,7 +218,7 @@ class BBjson {
                     if(isset($arr["error"]))
                         $this->error("cURL error: " . print_r($arr, true));
                 }
-                
+
                 $commit = json_decode($data, true);
                 $commit['hash'] = $cmt['hash'];
                 // array_push($this->data->branch[$branch_name]['commits'], $commit);
@@ -245,7 +254,7 @@ class BBjson {
         fputs($logdatei,$text);
         fclose($logdatei);
     }
-    
+
     // Log the received payload
     function log_payload($text) {
         $logdatei = fopen("logpayload.txt","a");

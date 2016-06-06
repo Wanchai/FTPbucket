@@ -2,12 +2,12 @@
 
 /**
  * This class manages payloads received from a BitBucket POST hook
- * 
- * "THE BEER-WARE LICENSE" (Revision 42): 
+ *
+ * "THE BEER-WARE LICENSE" (Revision 42):
  * Thomas MALICET wrote this file. As long as you retain this notice you
  * can do whatever you want with this stuff. If we meet some day, and you think
  * this stuff is worth it, you can buy me a beer in return.
- * 
+ *
  * www.thomasmalicet.com
  */
 
@@ -38,9 +38,9 @@ class BBpost {
         if (!@ftp_login($conn_id, $ftp['ftp_user'], $ftp['ftp_pass'])) {
             $this->error('error: FTP Connection failed!');
         } else {
-            
+
             ftp_pasv($conn_id, true);
-            
+
             foreach ($this->commits as $commit) {
 
                 $node = $commit->node;
@@ -48,7 +48,7 @@ class BBpost {
 
                 foreach ($commit->files as $file) {
 
-                    if ($file->type=="removed") 
+                    if ($file->type=="removed")
                     {
                          // TODO: Check if file exists
                         if (@ftp_delete($conn_id, $ftp['ftp_path'].$file->file)) {
@@ -56,12 +56,12 @@ class BBpost {
                         } else {
                             $log_msg .= $this->log_it('Error while removing: '.$ftp['ftp_path'].$file->file, false);
                         }
-                    } 
-                    else 
+                    }
+                    else
                     {
                         $dirname = dirname($file->file);
                         $chdir = @ftp_chdir($conn_id, $ftp['ftp_path'].$dirname);
-                        
+
                         if (!$chdir)
                         {
                             if ($this->make_directory($conn_id, $ftp['ftp_path'].$dirname)) {
@@ -70,17 +70,21 @@ class BBpost {
                                 $log_msg .= $this->log_it('Error: failed to create new directory '.$dirname, false);
                             }
                         }
-                        
+
                         $url = "https://api.bitbucket.org/1.0/repositories".$this->repo->absolute_url."raw/".$node."/".$file->file;
-                        
+
                         $ch = curl_init($url);
                         curl_setopt($ch, CURLOPT_USERPWD, $this->bitbucket['username'].':'.$this->bitbucket['password']);
                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 
                         $data = curl_exec($ch);
-                        
-                        if(!$data) 
+                        /**
+                         * Check for HTTP return status instead of the data that is returned from
+                         * CURL. This ensures that even an empty file will be transfered properly.
+                         */
+                        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                        if ($http_code != 200)
                         {
                             $log_msg .= $this->log_it('Cant\'t get the file '.$file->file.' cURL error: '.curl_error($ch), false);
                         }
@@ -89,7 +93,7 @@ class BBpost {
                             $temp = tmpfile();
                             fwrite($temp, $data);
                             fseek($temp, 0);
-    
+
                             if(ftp_fput($conn_id, $ftp['ftp_path'].$file->file, $temp, FTP_BINARY))
                             {
                                 $log_msg .= $this->log_it('Uploaded: '.$ftp['ftp_path'].$file->file, false);
@@ -101,13 +105,13 @@ class BBpost {
                             }
                             fclose($temp);
                         }
-                        
+
                         curl_close($ch);
                     }
                 }
             }
             ftp_close($conn_id);
-            
+
             $log_msg .= $this->log_it("Transfer done.\n", false);
 
             $this->log_msg($log_msg);
@@ -133,7 +137,7 @@ class BBpost {
 
     function get_ftpdata() {
         $repo = $this->get_repo();
-        // Returns the branch ftp config related to the commit 
+        // Returns the branch ftp config related to the commit
         return $this->get_branch($repo);
     }
 
@@ -144,15 +148,15 @@ class BBpost {
         }
         $this->error('error: Can\'t find any repo with the name {'.$this->repo->slug.'} in your config file');
     }
-    
+
     function get_branch($repo){
         foreach ($this->commits as $commit) {
 
             // For several commits, only the last one has the branch name, the others null
             if ($commit->branch != null){
-        
+
                 foreach ($repo['branches'] as $branch) {
-        
+
                     // Checks if you have a config for BB's branch
                     if ($branch['branch_name'] == $commit->branch) return $branch;
                 }
@@ -206,7 +210,7 @@ class BBpost {
         fputs($logdatei,$text);
         fclose($logdatei);
     }
-    
+
     // Log the received payload
     function log_payload($text) {
         $logdatei = fopen("logpayload.txt","a");
