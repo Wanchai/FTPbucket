@@ -63,13 +63,15 @@ class GHjson
         }
 
         foreach ($br['commits'] as $commit) {
+            $msgIsSent = false;
+            $msg = '';
             $node = $commit ['id'];
-
+            $this->log_it('Commencing transfer for this branch.....');
             foreach ($commit['removed'] as $file) {
                 if (@unlink($wrapper . $file)) {
-                    $this->log_it('Removed ' . $ftp['ftp_path'] . $file);
+                    $msg .= $this->log_it('Removed ' . $ftp['ftp_path'] . $file, $msgIsSent);
                 } else {
-                    $this->log_it('Error while removing: ' . $ftp['ftp_path'] . $file);
+                    $msg .= $this->log_it('Error while removing: ' . $ftp['ftp_path'] . $file, $msgIsSent);
                 }
             }
 
@@ -79,9 +81,9 @@ class GHjson
 
                 if (!is_dir($wrapper . $dirname)) {
                     if (mkdir($wrapper . $dirname, 0705, true)) {
-                        $this->log_it('Created new directory ' . $dirname);
+                        $msg .= $this->log_it('Created new directory ' . $dirname, $msgIsSent);
                     } else {
-                        $this->log_it('Error: failed to create new directory ' . $dirname);
+                        $msg .= $this->log_it('Error: failed to create new directory ' . $dirname, $msgIsSent);
                     }
                 }
 
@@ -91,7 +93,6 @@ class GHjson
                 curl_setopt($cu, CURLOPT_USERPWD, $this->data->auth['username'] . ':' . $this->data->auth['password']);
                 curl_setopt($cu, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($cu, CURLOPT_FOLLOWLOCATION, false);
-
                 $data = curl_exec($cu);
                 /**
                  * Check for HTTP return status instead of the data that is returned from
@@ -99,21 +100,20 @@ class GHjson
                  */
                 $http_code = curl_getinfo($cu, CURLINFO_HTTP_CODE);
                 if ($http_code != 200) {
-                    $this->log_it('Cant\'t get the file ' . $file . ' cURL error: ' . curl_error($cu));
-                } else if (curl_getinfo($cu, CURLINFO_HTTP_CODE) == 404) {
-                    $this->log_it('Cant\'t get the file ' . $file . ' : 404');
+                    $msg .= $this->log_it('Cant\'t get the file ' . $file . ' - error code : ' . $http_code . ' - cURL error: ' . curl_error($cu), $msgIsSent);
                 } else {
                     if (file_put_contents($wrapper . $file, $data, 0, stream_context_create(array('ftp' => array('overwrite' => true))))) {
-                        $this->log_it('Uploaded: ' . $ftp['ftp_path'] . $file);
+                        $msg .= $this->log_it('Uploaded: ' . $ftp['ftp_path'] . $file, $msgIsSent);
                     } else {
                         $e = error_get_last();
-                        $this->log_it('Error Uploading ' . $file . ' >> ' . $e['message']);
+                        $msg .= $this->log_it('Error Uploading ' . $file . ' >> ' . $e['message'], $msgIsSent);
                     }
                 }
                 curl_close($cu);
             }
+            $this->log_msg($msg);
         }
-        $this->log_it("Transfer done for branch {" . $br['name'] . "}\n");
+        $this->log_it("Transfer done for branch {" . $br['name'] . "}" . PHP_EOL);
     }
 
     function load_datas()
@@ -189,7 +189,7 @@ class GHjson
     // Appends to log file if save == true
     function log_it($text, $save = true)
     {
-        $msg = date("d.m.Y, H:i:s", time()) . ': ' . $text . "\n";
+        $msg = date("d.m.Y, H:i:s", time()) . ': ' . $text . PHP_EOL;
 
         if (!$save) {
             return $msg;

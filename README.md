@@ -47,10 +47,7 @@ You have to setup a password in the config file.
 LIMITATIONS
 -----------
 
-1. The script only copies the files you are pushing. It means that if you start with this tool when you already have files in your Bitbucket repo, they won't be copied on the server. I'm looking for solutions on a full deploy. Which brings me the second point.
-2. I tried to push a 160Mo repo with more than 26 000 files and the hook didn't like it. The limit is 1000 files/push I think. It's an unsolved issue: https://bitbucket.org/site/master/issue/7439/git-post-commit-hook-payloads-has-empty
-
-SOLUTION : When you create a new repo on BB and need to push a lot of files, just do it. Right after, you set up the hook and manually copy the repo and FTPbucket files on your FTP.
+The script only copies the files you are pushing. It means that if you start with this tool when you already have files in your repo, they won't be copied on the server. I'm looking for solutions on a full deploy.
 
 MORE
 ----
@@ -64,6 +61,6 @@ TODO
 
 LICENCE
 -------
-Copyright (c) 2014-2015 [Thomas Malicet](http://www.thomasmalicet.com/)
+Copyright (c) 2014-2016 [Thomas Malicet](http://www.thomasmalicet.com/)
 
 This code is an open-sourced software licensed under the [BEER-WARE LICENCE] (https://fedoraproject.org/wiki/Licensing/Beerware)

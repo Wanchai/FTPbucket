@@ -1,4 +1,28 @@
 <?php
+ini_set('memory_limit', '250M');
+ini_set('max_execution_time', 0);
+
+ob_end_clean();
+
+ignore_user_abort(true);
+set_time_limit(0);
+
+// Sends a green flag to the repo
+header("Connection: close\r\n");
+header("Content-Encoding: none\r\n");
+
+ob_start();
+echo "Roger that! The deployment script has received your request.";
+header("Content-Length: ".ob_get_length());
+
+ob_end_flush();
+flush();
+ob_end_clean();
+
+if ($fp = fopen('logconnection.txt', 'a')) {
+    $start_time = microtime(true);
+    fwrite($fp, 'A PUSH was started at ' . date("d.m.Y, H:i:s", $start_time) . PHP_EOL);
+}
 
 if (isset($_POST['payload'])) {
     $data = json_decode(stripslashes($_POST['payload']));
@@ -29,3 +53,8 @@ if (isset($_POST['payload'])) {
         $go->init($payload);
     }
 }
+
+$end_time = microtime(true);
+fwrite($fp, 'The push finally finished at ' . date("d.m.Y, H:i:s", $end_time) . '.' . PHP_EOL);
+fwrite($fp, 'In total it took ' . ceil($end_time - $start_time) . ' seconds.' . PHP_EOL . PHP_EOL);
+fclose($fp);
