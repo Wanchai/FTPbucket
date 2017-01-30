@@ -1,15 +1,16 @@
 <?php
 /*
 * @repo_name = you can find it in your repo URL : https://bitbucket.org/a_name/repo_name/
-* @repo_home = 'bitbucket' OR 'github'
-* @type = FTP or SSH or NONE if it's the same server
+* @repo_host = 'bitbucket' or 'github'
+* @type = 'ftp' or 'ssh' or 'none' if it's the same server
+*
 * If you want to copy your files on the server hosting FTPbucket's script, set 'type'=>'none'.
 * @ftp_path is relative to the ftp_host. If type is 'none', path is relative to FTPbucket's script location. '../' is usually a good idea.
 *
-* You can set a specific server for each branch or just change the path
+* You can set a specific server for each branch or just change the path.
 *
-* If you work with multiple servers: FTP credentials are the one of your target server, not the server hosting FTPbucket's script. 
-* 
+* If you work with multiple servers: FTP credentials are the one of your target server, not the server hosting FTPbucket's script.
+*
 */
 
 return array(
@@ -31,7 +32,7 @@ return array(
     				'type'=>'none',
                     'ftp_path'=>'../',
     			),
-    		),        
+    		),
         ),
         'repo2' => array (
             'repo_name'=>'testb',
@@ -45,7 +46,7 @@ return array(
                     'ftp_pass'=>'example_password',
                     'ftp_path'=>'/prod/',
                 ),
-            ),        
+            ),
         ),
     ),
     // Your BitBucket Credentials
@@ -60,4 +61,4 @@ return array(
     ),
     // ADMIN password for FTPBucket's UI
     'admin_pass' => 'CHANGE'
-)
+);
