@@ -1,6 +1,7 @@
 SetEnv PHP_VER 54
 
 # https://confluence.atlassian.com/bitbucket/manage-webhooks-735643732.html
+# https://confluence.atlassian.com/bitbucket/what-are-the-bitbucket-cloud-ip-addresses-i-should-use-to-configure-my-corporate-firewall-343343385.html
 # https://help.github.com/articles/what-ip-addresses-does-github-use-that-i-should-whitelist/
 # allow POST from bitbucket and Github
 
@@ -10,6 +11,10 @@ SetEnv PHP_VER 54
 	allow from 131.103.20.160/27
 	allow from 165.254.145.0/26
 	allow from 104.192.143.0/24
+	allow from 104.192.136.0/21
+	allow from 34.198.203.127	
+	allow from 34.198.178.64
+	allow from 34.198.32.85
 	# GH
 	allow from 192.30.252.0/22
 	allow from 2620:112:3000::/44
