@@ -175,7 +175,8 @@ class BBjson
             }
 
             // --- The Commits --- //
-            foreach ($change['commits'] as $cmt) {
+			$change_commits = $this->fetch_commits($change['old']['target']['hash'], $change['new']['target']['hash']);
+            foreach ($change_commits as $cmt) {
                 // --- Retrieve list of files --- //
                 $url = 'https://bitbucket.org/api/1.0/repositories/' . $this->data->ftp['full_name'] . '/changesets/' . $cmt['hash'] . '/';
 
@@ -204,6 +205,70 @@ class BBjson
             ksort($this->data->branch[$branch_name]['commits']);
         }
     }
+	
+	function fetch_commits($old_hash, $new_hash){
+		$url = 'https://bitbucket.org/api/2.0/repositories/'.$this->data->ftp['full_name'].'/commits/';
+		
+		//$args = ['pagelen' => 10];
+		$args = [];
+		
+		/*
+		 * TODO: Potential Improvement:
+		 * If $old_hash is null or empty we could just grab a zip of the files instead of grabbing individual files.
+		 * An example is here:
+		 * https://bitbucket.org/snippets/tpettersen/78Ajj
+		 * URL is https://bitbucket.org/{repo_path}/get/{commit_hash}.zip
+		 * Alternative formats: .tar.bz2 or .tar.gz
+		 * After grabbing the file would need to extract it and upload it's contents
+		 */
+		
+		
+		if(!empty($old_hash) && $old_hash != "null"){
+			$args['exclude'] = $old_hash;
+		}
+		if(!empty($new_hash) && $new_hash != 'null'){
+			$args['include'] = $new_hash;
+		}
+		
+		$url = $url . '?' . http_build_query($args);
+		
+		$has_more = true;
+		$all_results = [];
+		
+		// Loop through until there are not more pages of results
+		do{
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_USERPWD, $this->data->auth['username'] . ':' . $this->data->auth['password']);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+			$data = curl_exec($ch);
+			/**
+			 * Check for HTTP return status instead of the data that is returned from
+			 * CURL. This ensures that even an empty file will be transfered properly.
+			 */
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			if ($http_code != 200) {
+				$this->error('Cant\'t get lists of commits! HTTP_CODE: ' . $http_code . ' cURL error: ' . curl_error($ch));
+			} else {
+				$arr = json_decode($data, true);
+				if (isset($arr["error"]))
+					$this->error("cURL error: " . print_r($arr, true));
+			}
+			$result = json_decode($data, true);
+			
+			$has_more = isset($result['next']) && !empty($result['next']);
+			
+			if($has_more){
+				$url = $result['next'];
+			}
+			// Make sure decoding worked
+			if(!is_null($result) && is_array($result['values'])){
+				$all_results = array_merge($all_results, $result['values']);
+			}
+		}while($has_more);
+		
+		return $all_results;
+	}
 
     /*
     * LOGGING FUNCTIONS
