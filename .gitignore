@@ -3,3 +3,4 @@ ftpbucket/logfile.txt
 ftpbucket/logpayload.txt
 ftpbucket/logconnection.txt
 .idea/
+error_log
