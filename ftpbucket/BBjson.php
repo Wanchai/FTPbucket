@@ -44,13 +44,11 @@ class BBjson
 
         // Make sure we only get 1 configuration
         $check = 0;
-
-        // The name passed through for the repository is only the full name so replace the owner part with nothing to get just the repository slug
-        $payload_repo_name = trim( str_replace( $this->payload['repository']['owner']['username'], '', $this->payload['repository']['full_name'] ), '/' );
+        $payload_repo_name = $this->payload['repository']['full_name'];
 
         // Loop through configs and find a matching one
         foreach ( $config['repos'] as $repo ) {
-            if ( $payload_repo_name == $repo['repo_name'] && $repo['repo_host'] == 'bitbucket' ) {
+            if ( strpos($payload_repo_name, $repo['repo_name']) != false && $repo['repo_host'] == 'bitbucket' ) {
                 $this->config->ftp = $repo;
                 $check++;
             }
