@@ -14,6 +14,12 @@ From one FTPbucket folder, you can manage an infinite number of hosts and repos.
 
 **- release notes -**
 
+**v0.8**
+
+If you are updating, you should go for a fresh install. Erase everything except the config file.
+- Removed support for deprecated BitBucket POST Hooks
+- Moved BitBucket to API 2.0 Thanks to [d2roth](https://github.com/d2roth)
+
 **v0.7**
 
 If you are updating, you should go for a fresh install. Erase everything except the .txt files if you want to keep your logs.
