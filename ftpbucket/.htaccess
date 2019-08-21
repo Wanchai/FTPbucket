@@ -20,5 +20,6 @@ SetEnv PHP_VER 54
 	allow from 13.52.5.0/25
 	# GH
 	allow from 192.30.252.0/22
+	allow from 140.82.112.0/20
 	allow from 2620:112:3000::/44
 </Limit>
