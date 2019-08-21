@@ -46,6 +46,7 @@ class BBjson
         $check = 0;
         $payload_repo_name = $this->payload['repository']['full_name'];
 
+        // --- Checks if the repo from BB match one of yours --- //
         // Loop through configs and find a matching one
         foreach ( $config['repos'] as $repo ) {
             if ( strpos($payload_repo_name, $repo['repo_name']) != false && $repo['repo_host'] == 'bitbucket' ) {
