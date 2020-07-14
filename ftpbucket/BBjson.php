@@ -49,7 +49,7 @@ class BBjson
         // --- Checks if the repo from BB match one of yours --- //
         // Loop through configs and find a matching one
         foreach ( $config['repos'] as $repo ) {
-            if ( strpos($payload_repo_name, $repo['repo_name']) != false && $repo['repo_host'] == 'bitbucket' ) {
+            if ( strpos($payload_repo_name, $repo['repo_name']) !== false && $repo['repo_host'] == 'bitbucket' ) {
                 $this->config->ftp = $repo;
                 $check++;
             }
