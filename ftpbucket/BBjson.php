@@ -194,7 +194,7 @@ class BBjson
                     }
 
                     // Todo http://arguments.callee.info/2010/02/21/multiple-curl-requests-with-php/
-                    $url = $file['new']['links']['self']['href'];
+                    $url = fix_bitbucket_api_base_url($file['new']['links']['self']['href']);
 
                     $cu = curl_init ( $url ); 
                     curl_setopt ( $cu, CURLOPT_USERPWD, $this->config->auth['username'] . ':' . $this->config->auth['password'] ); 
@@ -236,6 +236,14 @@ class BBjson
         }
     }
 
+    private function fix_bitbucket_api_base_url($url)
+    {
+        if (!preg_match("/^https:\/\/bitbucket.org\/!api/", $url)) {
+            return $url;
+        }
+
+        return str_replace("https://bitbucket.org/!api", "https://bitbucket.org/api", $url);
+    }
 
     private function api_get_values ( $url, $branch ) {
 
