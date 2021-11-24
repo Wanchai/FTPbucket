@@ -194,7 +194,7 @@ class BBjson
                     }
 
                     // Todo http://arguments.callee.info/2010/02/21/multiple-curl-requests-with-php/
-                    $url = fix_bitbucket_api_base_url($file['new']['links']['self']['href']);
+                    $url = $this->fix_bitbucket_api_base_url($file['new']['links']['self']['href']);
 
                     $cu = curl_init ( $url ); 
                     curl_setopt ( $cu, CURLOPT_USERPWD, $this->config->auth['username'] . ':' . $this->config->auth['password'] ); 
